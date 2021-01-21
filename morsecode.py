@@ -16,7 +16,7 @@ def get_help_message():
     message = "HELP - International Morse Code List\n"
     morse_code = get_morse_code_dict()
 
-    counter = 0
+    counter = 0 
 
     for key in sorted(morse_code):
         counter += 1
@@ -28,6 +28,10 @@ def get_help_message():
 
 
 def is_help_command(user_input):
+    if user_input.lower() == "help" or user_input.lower() == "h":
+        result = True
+    else:
+        result = False
     """
     Input:
         - user_input : 문자열값으로 사용자가 입력하는 문자
@@ -51,13 +55,21 @@ def is_help_command(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
+    
     return result
     # ==================================
 
 
 def is_validated_english_sentence(user_input):
+    import string
+    num = list(string.digits)
+    num = num + list( """_@#$%^&*()-+=[]"'{;}:\|`~""" )  
+    for i in list(user_input):
+        if i in num:
+            return False
+
+    if len(set(user_input) - set([""," ",".","!",","])) ==0:
+        return False
     """
     Input:
         - user_input : 문자열값으로 사용자가 입력하는 문자
@@ -83,13 +95,19 @@ def is_validated_english_sentence(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
+    result = True
 
     return result
     # ==================================
 
 
 def is_validated_morse_code(user_input):
+    m = get_morse_code_dict()
+    if len(set(list(user_input))-set(["-","."," "])) != 0:
+        return False
+    for i in list(user_input.split()):
+        if i not in m.values():
+            return False
     """
     Input:
         - user_input : 문자열값으로 사용자가 입력하는 문자
@@ -114,7 +132,7 @@ def is_validated_morse_code(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
+    result = True
 
     return result
     # ==================================
@@ -122,6 +140,8 @@ def is_validated_morse_code(user_input):
 
 
 def get_cleaned_english_sentence(raw_english_sentence):
+    raw_english_sentence = raw_english_sentence.rstrip().lstrip()
+    result = "".join(list(filter(lambda x : x not in list(".,!?"), raw_english_sentence)))
     """
     Input:
         - raw_english_sentence : 문자열값으로 Morse Code로 변환 가능한 영어 문장
@@ -140,13 +160,14 @@ def get_cleaned_english_sentence(raw_english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
 
     return result
     # ==================================
 
 
 def decoding_character(morse_character):
+    
+    
     """
     Input:
         - morse_character : 문자열값으로 get_morse_code_dict 함수로 알파벳으로 치환이 가능한 값의 입력이 보장됨
@@ -170,8 +191,10 @@ def decoding_character(morse_character):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
     morse_code_dict = get_morse_code_dict()
+    for key,value in morse_code_dict.items():
+        if value == morse_character:
+            return key
     result = None
-
     return result
     # ==================================
 
@@ -200,6 +223,9 @@ def encoding_character(english_character):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
     morse_code_dict = get_morse_code_dict()
+    for key,value in morse_code_dict.items():
+        if key == english_character:
+            return value
     result = None
 
     return result
@@ -223,15 +249,24 @@ def decoding_sentence(morse_sentence):
         >>> mc.decoding_sentence("-.-- --- ..-  .- .-. .  ..-. ")
         'YOU ARE F'
     """
-    # ===Modify codes below=============
-    # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
+    m = get_morse_code_dict()
+    result = morse_sentence.split(" ")
+    for i in range(len(result)):
+        if result[i] =="":
+            result[i] = " "
+            continue
+        for key, value in m.items():
+            if result[i] == value:
+                result[i] = key
+                break
+        
+    result = "".join(result).rstrip()
     return result
     # ==================================
 
 
 def encoding_sentence(english_sentence):
+    import string
     """
     Input:
         - english_sentence : 문자열 값으로 모스 부호로 변환이 가능한 영어문장
@@ -251,18 +286,42 @@ def encoding_sentence(english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
-    return result
+    # result = []
+    # english_sentence = "".join(result.append(i) for i in list(filter(lambda x : x in list(string.ascii_letters+string.ascii_letters.upper()+" ") )) if i in get_morse_code_dict.keys() else result.append(" "))
+    # return english_sentence
     # ==================================
+    m = get_morse_code_dict()
+    english_sentence = list(get_cleaned_english_sentence(" ".join(english_sentence.upper().split())))
+    for i in range(len(english_sentence)):
+        if english_sentence[i] in m.keys():
+            english_sentence[i] = m[english_sentence[i]]+" "
 
+       
+    
+    english_sentence = "".join(english_sentence).rstrip()
+    english_sentence.lstrip()
+    return english_sentence
 
 def main():
     print("Morse Code Program!!")
     # ===Modify codes below=============
+    ipt=""
+    while 1:
+        ipt = input("Input your message(H - Help, 0 - Exit): ")
+        if ipt == "0":
+            break
+        elif is_help_command(ipt) == True:
+            get_help_message()
+        else:
+            if is_validated_morse_code(ipt) ==True:
+                print(decoding_sentence(ipt))
+            elif is_validated_english_sentence(ipt) ==True:
+                print(encoding_sentence(ipt))
+            else:
+                print("Wrong Input")
 
 
-
+    
     # ==================================
     print("Good Bye")
     print("Morse Code Program Finished!!")
